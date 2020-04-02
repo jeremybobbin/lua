@@ -49,7 +49,7 @@ TESTS= -DLUA_USER_H='"ltests.h"'
 # -mtune=native -fomit-frame-pointer
 # -fno-stack-protector
 LOCAL = $(TESTS) $(CWARNS) -g
-
+PREFIX = /usr/local
 
 
 # enable Linux goodies
@@ -58,10 +58,11 @@ MYLDFLAGS= $(LOCAL) -Wl,-E
 MYLIBS= -ldl -lreadline
 
 
+<<<<<<< HEAD
 CC= clang-3.8
 CFLAGS= -Wall -O2 $(MYCFLAGS)
 AR= ar rcu
-CP= cp
+CP= cp -v
 RANLIB= ranlib
 RM= rm -f
 
@@ -113,8 +114,8 @@ $(LUAC_T): $(LUAC_O) $(CORE_T)
 	$(CC) -o $@ $(MYLDFLAGS) $(LUAC_O) $(CORE_T) $(LIBS) $(MYLIBS)
 
 install: $(ALL_T)
-	@$(CP) $(ALL_T) $(PREFIX)/lib
-	@$(CP) $(LUA_T) $(PREFIX)/bin
+	$(CP) $(CORE_SO) $(CORE_T) $(PREFIX)/lib
+	$(CP) $(LUA_T) $(PREFIX)/bin
 
 clean:
 	$(RM) $(CORE_SO) $(CORE_T) $(ALL_O)
