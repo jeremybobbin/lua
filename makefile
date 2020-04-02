@@ -72,6 +72,7 @@ RM= rm -f
 LIBS = -lm
 
 CORE_T=	liblua.a
+CORE_SO=	liblua.so
 CORE_O=	lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
 	lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o \
 	ltm.o lundump.o lvm.o lzio.o ltests.o
@@ -85,7 +86,7 @@ LUA_O=	lua.o
 # LUAC_T=	luac
 # LUAC_O=	luac.o print.o
 
-ALL_T= $(CORE_T) $(LUA_T) $(LUAC_T)
+ALL_T= $(CORE_SO) $(CORE_T) $(LUA_T) $(LUAC_T)
 ALL_O= $(CORE_O) $(LUA_O) $(LUAC_O) $(AUX_O) $(LIB_O)
 ALL_A= $(CORE_T)
 
@@ -98,6 +99,9 @@ a:	$(ALL_A)
 $(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O)
 	$(AR) $@ $?
 	$(RANLIB) $@
+
+$(CORE_SO): $(CORE_O) $(LIB_O)
+	$(CC) -shared -ldl -Wl,-soname,$(CORE_SO) -o $@ $? -lm $(MYLDFLAGS)
 
 $(LUA_T): $(LUA_O) $(CORE_T)
 	$(CC) -o $@ $(MYLDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
