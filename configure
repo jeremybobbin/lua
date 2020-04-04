@@ -1,0 +1,54 @@
+#!/bin/sh
+PREFIX=/usr/local
+LDFLAGS="-shared -fPIC"
+SHARED="yes"
+STATIC="yes"
+ALL_T="\$(LUA_T) \$(LUAC_T)"
+
+usage () {
+	cat <<- EOF
+	Usage: $0 [OPTION]... [VAR=VALUE]...
+
+	Installation directories:
+	  --prefix=PREFIX         main installation prefix [/usr/local]
+	
+	Other Options:
+	  --without-shared        skip compiling shared libraries
+	  --without-static        skip compiling static libraries
+
+	EOF
+	exit 0
+}
+
+
+for arg; do
+	case $arg in
+		--prefix=*) PREFIX=${arg#*=};;
+		--without-shared) SHARED=no;;
+		--without-static) STATIC=no;;
+		--help|*) usage;;
+	esac
+done
+
+OS=$(uname)
+case "$OS" in
+	Linux)    LDFLAGS="-shared -fPIC";;
+	Darwin)  LDFLAGS="-bundle -undefined dynamic_lookup";;
+	*)     echo "$0: unsuppoted OS" 1>&2;;
+esac
+
+if [ $SHARED = "yes" ]; then
+	ALL_T="$ALL_T \$(CORE_SO) "
+fi
+
+if [ $STATIC = "yes" ]; then
+	ALL_T="$ALL_T \$(CORE_T) "
+fi
+
+exec 3>&1 1>config.mk
+echo PREFIX=$PREFIX
+echo LDFLAGS=$LDFLAGS
+echo ALL_T=$ALL_T
+exec 1>&3 3>&-
+
+echo done 1>&2

@@ -61,6 +61,7 @@ MYLIBS= -ldl -lreadline
 CC= clang-3.8
 CFLAGS= -Wall -O2 $(MYCFLAGS)
 AR= ar rcu
+CP= cp
 RANLIB= ranlib
 RM= rm -f
 
@@ -90,6 +91,8 @@ ALL_T= $(CORE_SO) $(CORE_T) $(LUA_T) $(LUAC_T)
 ALL_O= $(CORE_O) $(LUA_O) $(LUAC_O) $(AUX_O) $(LIB_O)
 ALL_A= $(CORE_T)
 
+include config.mk
+
 all:	$(ALL_T)
 
 o:	$(ALL_O)
@@ -109,9 +112,12 @@ $(LUA_T): $(LUA_O) $(CORE_T)
 $(LUAC_T): $(LUAC_O) $(CORE_T)
 	$(CC) -o $@ $(MYLDFLAGS) $(LUAC_O) $(CORE_T) $(LIBS) $(MYLIBS)
 
+install: $(ALL_T)
+	@$(CP) $(ALL_T) $(PREFIX)/lib
+	@$(CP) $(LUA_T) $(PREFIX)/bin
+
 clean:
-	rcsclean -u
-	$(RM) $(ALL_T) $(ALL_O)
+	$(RM) $(CORE_SO) $(CORE_T) $(ALL_O)
 
 depend:
 	@$(CC) $(CFLAGS) -MM *.c
