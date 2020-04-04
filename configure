@@ -26,6 +26,7 @@ for arg; do
 		--prefix=*) PREFIX=${arg#*=};;
 		--without-shared) SHARED=no;;
 		--without-static) STATIC=no;;
+		--*=*) ;;
 		--help|*) usage;;
 	esac
 done
@@ -39,16 +40,19 @@ esac
 
 if [ $SHARED = "yes" ]; then
 	ALL_T="$ALL_T \$(CORE_SO) "
+	LIBDEPS="$LIBDEPS \$(CORE_SO) "
 fi
 
 if [ $STATIC = "yes" ]; then
 	ALL_T="$ALL_T \$(CORE_T) "
+	LIBDEPS="$LIBDEPS \$(CORE_T) "
 fi
 
 exec 3>&1 1>config.mk
-echo PREFIX=$PREFIX
-echo LDFLAGS=$LDFLAGS
 echo ALL_T=$ALL_T
+echo LDFLAGS=$LDFLAGS
+echo LIBDEPS=$LIBDEPS
+echo PREFIX=$PREFIX
 exec 1>&3 3>&-
 
 echo done 1>&2

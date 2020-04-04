@@ -86,7 +86,8 @@ LUA_O=	lua.o
 # LUAC_T=	luac
 # LUAC_O=	luac.o print.o
 
-ALL_T= $(CORE_SO) $(CORE_T) $(LUA_T) $(LUAC_T)
+LIBDEPS = $(CORE_SO) $(CORE_T)
+ALL_T= $(LIBDEPS) $(LUA_T) $(LUAC_T)
 ALL_O= $(CORE_O) $(LUA_O) $(LUAC_O) $(AUX_O) $(LIB_O)
 ALL_A= $(CORE_T)
 
@@ -112,7 +113,7 @@ $(LUAC_T): $(LUAC_O) $(CORE_T)
 	$(CC) -o $@ $(MYLDFLAGS) $(LUAC_O) $(CORE_T) $(LIBS) $(MYLIBS)
 
 install: $(ALL_T)
-	$(CP) $(CORE_SO) $(CORE_T) $(PREFIX)/lib
+	$(CP) $(LIBDEPS) $(PREFIX)/lib
 	$(CP) $(LUA_T) $(PREFIX)/bin
 
 clean:
