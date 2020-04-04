@@ -1,6 +1,6 @@
 #!/bin/sh
 PREFIX=/usr/local
-LDFLAGS="-shared -fPIC"
+SHARED_LDFLAGS="-shared -ldl"
 SHARED="yes"
 STATIC="yes"
 ALL_T="\$(LUA_T) \$(LUAC_T)"
@@ -33,8 +33,8 @@ done
 
 OS=$(uname)
 case "$OS" in
-	Linux)    LDFLAGS="-shared -fPIC";;
-	Darwin)  LDFLAGS="-bundle -undefined dynamic_lookup";;
+	Linux)    SHARED_LDFLAGS="-shared -ldl";;
+	Darwin)  SHARED_LDFLAGS="-bundle -undefined dynamic_lookup";;
 	*)     echo "$0: unsuppoted OS" 1>&2;;
 esac
 
@@ -50,9 +50,9 @@ fi
 
 exec 3>&1 1>config.mk
 echo ALL_T=$ALL_T
-echo LDFLAGS=$LDFLAGS
 echo LIBDEPS=$LIBDEPS
 echo PREFIX=$PREFIX
+echo SHARED_LDFLAGS=$SHARED_LDFLAGS
 exec 1>&3 3>&-
 
 echo done 1>&2

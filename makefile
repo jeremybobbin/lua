@@ -57,6 +57,8 @@ MYCFLAGS= $(LOCAL) -std=c99 -DLUA_USE_LINUX -DLUA_COMPAT_5_2
 MYLDFLAGS= $(LOCAL) -Wl,-E
 MYLIBS= -ldl -lreadline
 
+SHARED_LDFLAGS=-shared -ldl
+
 CC= clang-3.8
 CFLAGS= -Wall -O2 $(MYCFLAGS)
 AR= ar rcu
@@ -104,7 +106,7 @@ $(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O)
 	$(RANLIB) $@
 
 $(CORE_SO): $(CORE_O) $(LIB_O)
-	$(CC) -shared -ldl -Wl,-soname,$(CORE_SO) -o $@ $? -lm $(MYLDFLAGS)
+	$(CC) $(SHARED_LDFLAGS) -Wl,-soname,$(CORE_SO).5.3 -o $@ $? -lm $(MYLDFLAGS)
 
 $(LUA_T): $(LUA_O) $(CORE_T)
 	$(CC) -o $@ $(MYLDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
