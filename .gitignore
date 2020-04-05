@@ -1,5 +1,6 @@
 config.mk
 liblua.a
-liblua.so
+*.so
+*.so.*
 lua
 *.o
