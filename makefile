@@ -105,7 +105,7 @@ $(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O)
 	$(AR) $@ $?
 	$(RANLIB) $@
 
-$(CORE_SO): $(CORE_O) $(LIB_O)
+$(CORE_SO): $(CORE_O) $(LIB_O) $(AUX_O)
 	$(CC) $(SHARED_LDFLAGS) -Wl,-soname,$(CORE_SO).5 -o $@ $? -lm $(MYLDFLAGS)
 
 $(LUA_T): $(LUA_O) $(CORE_T)
