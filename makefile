@@ -55,7 +55,7 @@ PREFIX = /usr/local
 # enable Linux goodies
 LUA_CFLAGS= $(CFLAGS) -Wall -O2 -std=c99 -DLUA_USE_LINUX -DLUA_COMPAT_5_2
 LUA_LDFLAGS= $(LDFLAGS) -Wl,-E
-LUA_LIBS= $(LIBS) -ldl -lreadline
+LUA_LIBS= -lreadline -ldl -lm $(LIBS) 
 SHARED_LDFLAGS=-shared -ldl
 
 CC= clang-3.8
@@ -68,9 +68,6 @@ RM= rm -f
 
 
 # == END OF USER SETTINGS. NO NEED TO CHANGE ANYTHING BELOW THIS LINE =========
-
-
-LIBS = -lm
 
 CORE_T=	liblua.a
 CORE_SO=	liblua.so
@@ -114,7 +111,7 @@ $(CORE_SO): $(CORE_SO).$(R)
 	$(LN) -sf $(CORE_SO).$(R) $@
 
 $(LUA_T): $(LUA_O) $(CORE_T)
-	$(CC) -o $@ $(LUA_LDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(LUA_LIBS) $(DL)
+	$(CC) -o $@ $(LUA_LDFLAGS) $(LUA_O) $(CORE_T) $(LUA_LIBS) $(DL)
 
 $(LUAC_T): $(LUAC_O) $(CORE_T)
 	$(CC) -o $@ $(LUA_LDFLAGS) $(LUAC_O) $(CORE_T) $(LIBS) $(LUA_LIBS)
