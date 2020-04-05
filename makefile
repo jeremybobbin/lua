@@ -53,14 +53,12 @@ PREFIX = /usr/local
 
 
 # enable Linux goodies
-MYCFLAGS= $(LOCAL) -std=c99 -DLUA_USE_LINUX -DLUA_COMPAT_5_2
-MYLDFLAGS= $(LOCAL) -Wl,-E
-MYLIBS= -ldl -lreadline
-
+LUA_CFLAGS= $(CFLAGS) -Wall -O2 -std=c99 -DLUA_USE_LINUX -DLUA_COMPAT_5_2
+LUA_LDFLAGS= $(LDFLAGS) -Wl,-E
+LUA_LIBS= -lreadline -ldl -lm $(LIBS) 
 SHARED_LDFLAGS=-shared -ldl
 
 CC= clang-3.8
-CFLAGS= -Wall -O2 $(MYCFLAGS)
 AR= ar rcu
 CP= cp -d
 LN= ln
@@ -70,9 +68,6 @@ RM= rm -f
 
 
 # == END OF USER SETTINGS. NO NEED TO CHANGE ANYTHING BELOW THIS LINE =========
-
-
-LIBS = -lm
 
 CORE_T=	liblua.a
 CORE_SO=	liblua.so
@@ -107,7 +102,7 @@ $(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O)
 	$(RANLIB) $@
 
 $(CORE_SO).$(R): $(CORE_O) $(LIB_O) $(AUX_O)
-	$(CC) $(SHARED_LDFLAGS) -Wl,-soname,$(CORE_SO).$(V) -o $@ $? -lm $(MYLDFLAGS)
+	$(CC) $(SHARED_LDFLAGS) -Wl,-soname,$(CORE_SO).$(V) -o $@ $? -lm $(LUA_LDFLAGS)
 
 $(CORE_SO).$(V): $(CORE_SO).$(R)
 	$(LN) -sf $(CORE_SO).$(R) $@
@@ -116,10 +111,10 @@ $(CORE_SO): $(CORE_SO).$(R)
 	$(LN) -sf $(CORE_SO).$(R) $@
 
 $(LUA_T): $(LUA_O) $(CORE_T)
-	$(CC) -o $@ $(MYLDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
+	$(CC) -o $@ $(LUA_LDFLAGS) $(LUA_O) $(CORE_T) $(LUA_LIBS) $(DL)
 
 $(LUAC_T): $(LUAC_O) $(CORE_T)
-	$(CC) -o $@ $(MYLDFLAGS) $(LUAC_O) $(CORE_T) $(LIBS) $(MYLIBS)
+	$(CC) -o $@ $(LUA_LDFLAGS) $(LUAC_O) $(CORE_T) $(LIBS) $(LUA_LIBS)
 
 install: $(ALL_T)
 	$(CP) $(LIBDEPS) $(PREFIX)/lib
@@ -129,7 +124,7 @@ clean:
 	$(RM) $(CORE_SO) $(CORE_SO).$(V) $(CORE_SO).$(R) $(CORE_T) $(ALL_O)
 
 depend:
-	@$(CC) $(CFLAGS) -MM *.c
+	@$(CC) $(LUA_CFLAGS) -MM *.c
 
 echo:
 	@echo "CC = $(CC)"
@@ -137,9 +132,9 @@ echo:
 	@echo "AR = $(AR)"
 	@echo "RANLIB = $(RANLIB)"
 	@echo "RM = $(RM)"
-	@echo "MYCFLAGS = $(MYCFLAGS)"
-	@echo "MYLDFLAGS = $(MYLDFLAGS)"
-	@echo "MYLIBS = $(MYLIBS)"
+	@echo "LUA_CFLAGS = $(LUA_CFLAGS)"
+	@echo "LUA_LDFLAGS = $(LUA_LDFLAGS)"
+	@echo "LUA_LIBS = $(LUA_LIBS)"
 	@echo "DL = $(DL)"
 
 $(ALL_O): makefile
