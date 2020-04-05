@@ -62,7 +62,8 @@ SHARED_LDFLAGS=-shared -ldl
 CC= clang-3.8
 CFLAGS= -Wall -O2 $(MYCFLAGS)
 AR= ar rcu
-CP= cp -v
+CP= cp -d
+LN= ln
 RANLIB= ranlib
 RM= rm -f
 
@@ -88,7 +89,7 @@ LUA_O=	lua.o
 # LUAC_T=	luac
 # LUAC_O=	luac.o print.o
 
-LIBDEPS = $(CORE_SO) $(CORE_T)
+LIBDEPS = $(CORE_SO) $(CORE_SO).$(R) $(CORE_SO).$(V) $(CORE_T)
 ALL_T= $(LIBDEPS) $(LUA_T) $(LUAC_T)
 ALL_O= $(CORE_O) $(LUA_O) $(LUAC_O) $(AUX_O) $(LIB_O)
 ALL_A= $(CORE_T)
@@ -105,8 +106,14 @@ $(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O)
 	$(AR) $@ $?
 	$(RANLIB) $@
 
-$(CORE_SO): $(CORE_O) $(LIB_O) $(AUX_O)
-	$(CC) $(SHARED_LDFLAGS) -Wl,-soname,$(CORE_SO).5 -o $@ $? -lm $(MYLDFLAGS)
+$(CORE_SO).$(R): $(CORE_O) $(LIB_O) $(AUX_O)
+	$(CC) $(SHARED_LDFLAGS) -Wl,-soname,$(CORE_SO).$(V) -o $@ $? -lm $(MYLDFLAGS)
+
+$(CORE_SO).$(V): $(CORE_SO).$(R)
+	$(LN) -sf $(CORE_SO).$(R) $@
+
+$(CORE_SO): $(CORE_SO).$(R)
+	$(LN) -sf $(CORE_SO).$(R) $@
 
 $(LUA_T): $(LUA_O) $(CORE_T)
 	$(CC) -o $@ $(MYLDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
@@ -119,7 +126,7 @@ install: $(ALL_T)
 	$(CP) $(LUA_T) $(PREFIX)/bin
 
 clean:
-	$(RM) $(CORE_SO) $(CORE_T) $(ALL_O)
+	$(RM) $(CORE_SO) $(CORE_SO).$(V) $(CORE_SO).$(R) $(CORE_T) $(ALL_O)
 
 depend:
 	@$(CC) $(CFLAGS) -MM *.c
