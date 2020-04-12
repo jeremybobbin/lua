@@ -57,6 +57,7 @@ LUA_CFLAGS= $(CFLAGS) -Wall -O2 -std=c99 -DLUA_USE_LINUX -DLUA_COMPAT_5_2
 LUA_LDFLAGS= $(LDFLAGS) -Wl,-E
 LUA_LIBS= -lreadline -ldl -lm $(LIBS) 
 SHARED_LDFLAGS=-shared -ldl
+INCLUDE= lauxlib.h luaconf.h lua.h lualib.h
 
 CC= clang-3.8
 AR= ar rcu
@@ -119,6 +120,8 @@ $(LUAC_T): $(LUAC_O) $(CORE_T)
 install: $(ALL_T)
 	$(CP) $(LIBDEPS) $(PREFIX)/lib
 	$(CP) $(LUA_T) $(PREFIX)/bin
+	$(CP) $(INCLUDE) $(PREFIX)/include
+
 
 clean:
 	$(RM) $(CORE_SO) $(CORE_SO).$(V) $(CORE_SO).$(R) $(CORE_T) $(ALL_O)
