@@ -61,7 +61,7 @@ INCLUDE= lauxlib.h luaconf.h lua.h lualib.h
 
 CC= clang-3.8
 AR= ar rcu
-CP= cp -d
+CP= cp -a
 LN= ln
 RANLIB= ranlib
 RM= rm -f
